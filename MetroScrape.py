@@ -9,6 +9,7 @@ import pandas as pd
 import pdb, time, datetime
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException    
 
 keyValues = open('keyValues.txt')
 keyValues = keyValues.read().split(',')
@@ -31,8 +32,8 @@ while dateStart <= datetime.datetime.now():
 #pdb.set_trace()
 
 chromeOptions = webdriver.ChromeOptions()
-preferences = {"download.default_directory" : keyValues[0]}
-chromeOptions.add_experimental_option("prefs",preferences)
+prefs = {"download.default_directory" : keyValues[0]}
+chromeOptions.add_experimental_option("prefs",prefs)
 
 baseURL = r'https://smartrip.wmata.com/Account/AccountLogin.aspx'
 #filingURL = baseURL + filingLink 
@@ -55,7 +56,7 @@ driver.find_element_by_xpath('//*[@id="ctl00_ctl00_MainContent_MainContent_txtPa
 driver.find_element_by_xpath('//*[@id="ctl00_ctl00_MainContent_MainContent_btnSubmit"]').click()
 time.sleep(1)
 driver.find_element_by_xpath('//*[@id="left_wide"]/ul/li/a').click()
-time.sleep(3)
+time.sleep(1)
 #//*[@id="right_wide"]/div/div/div/div[1]/p[3]/a
 driver.find_element_by_xpath('//*[@id="right_wide"]/div/div/div/div[1]/p[3]/a').send_keys(Keys.RETURN)
 time.sleep(1)
@@ -67,15 +68,21 @@ i = 0
 for datePair in datePairs:
     if i > 0:
         driver.find_element_by_xpath('//*[@id="ctl00_ctl00_MainContent_MainContent_btnBack"]').send_keys(Keys.RETURN)
-        
+    #pdb.set_trace()
+    driver.find_element_by_xpath('//*[@id="ctl00_ctl00_MainContent_MainContent_txtStartDate"]').clear()
     driver.find_element_by_xpath('//*[@id="ctl00_ctl00_MainContent_MainContent_txtStartDate"]').send_keys(datePair[0])
-    driver.find_element_by_xpath('//*[@id="ctl00_ctl00_MainContent_MainContent_txtEndDate"]').send_keys(datePair[1])
     
+    driver.find_element_by_xpath('//*[@id="ctl00_ctl00_MainContent_MainContent_txtEndDate"]').clear()
+    driver.find_element_by_xpath('//*[@id="ctl00_ctl00_MainContent_MainContent_txtEndDate"]').send_keys(datePair[1])
+    #pdb.set_trace()
     time.sleep(1)
     driver.find_element_by_xpath('//*[@id="ctl00_ctl00_MainContent_MainContent_btnSubmit"]').send_keys(Keys.RETURN)
-    pdb.set_trace()
+    #pdb.set_trace()
     time.sleep(1)
-    driver.find_element_by_xpath('//*[@id="ctl00_ctl00_MainContent_MainContent_lnkExport"]').send_keys(Keys.RETURN)
+    try:
+        driver.find_element_by_xpath('//*[@id="ctl00_ctl00_MainContent_MainContent_lnkExport"]').send_keys(Keys.RETURN)
+    except NoSuchElementException:
+        pass
     i = 1
 
 time.sleep(1)
