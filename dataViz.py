@@ -118,14 +118,18 @@ sortedGraph = dfGraph.sort_values('time', ascending = True)
     
 
 ind = np.arange(0, len(sortedGraph))
-plt.bar(ind, sortedGraph['count'])
+#ind = [x+2 for x in ind]
+plt.bar(ind, sortedGraph['count'], align='edge', width=0.3)#, width = (ind[1]-ind[0])*0.4)
 
-plt.xticks(ind+1.5, sortedGraph['time'].values, rotation=90)
-matplotlib.rcParams.update({'font.size': 10})
+plt.xticks(ind, sortedGraph['time'].values, rotation=90)
+matplotlib.rcParams.update({'font.size': 7})
 
 plt.ylabel('Minute Trip Overlap Count')
 plt.xlabel('Time')
-
+#plt.show()
+plt.rcParams["figure.figsize"] = (20,14)
+#plt.tick_params(axis='both', which='minor', labelsize=4)
+plt.savefig('results.png', dpi=300)
 
 
 """
